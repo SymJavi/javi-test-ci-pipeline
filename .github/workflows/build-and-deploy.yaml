@@ -1,0 +1,77 @@
+name: Build, Release, and Deploy to Staging
+
+# Trigger the workflow when PRs are merged into the main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up any language-specific dependencies (e.g., Node.js, Python, etc.)
+      - name: Set up Node.js (example step for Node.js project)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Install dependencies and build the project
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Determine the new version based on the commit hash (short version)
+      - name: Get short commit hash
+        id: short_commit_hash
+        run: |
+          short_commit=$(git rev-parse --short HEAD)
+          echo "short_commit=$short_commit" >> $GITHUB_ENV
+
+      - name: Create Git tag with commit hash
+        run: |
+          git tag ${{ env.short_commit }} -m "Release version based on commit ${{ env.short_commit }}"
+          git push origin ${{ env.short_commit }}
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.short_commit }}
+          release_name: "Release ${{ env.short_commit }}"
+          draft: false
+          prerelease: false
+
+  mock_deploy:
+    name: Mock Deployment to Staging
+    runs-on: ubuntu-latest
+    needs: release
+    environment:
+      name: staging
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Mock the deployment step
+      - name: Mock Deploy to Staging
+        run: |
+          echo "Mock deployment to staging environment using commit ${{ env.short_commit }} completed successfully."

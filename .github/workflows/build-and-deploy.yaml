@@ -42,7 +42,7 @@ jobs:
       - name: Set up Git user
         run: |
             git config user.name "GitHub Actions Bot"
-            git config user.email "actions@github.com"
+            git config user.email "javier.tarazaga@sympower.net"
 
       # Determine the new version based on the commit hash (short version)
       - name: Get short commit hash

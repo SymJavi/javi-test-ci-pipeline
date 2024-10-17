@@ -15,9 +15,6 @@ jobs:
       # Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          persist-credentials: true  # This ensures the GitHub token is persisted
-          set-safe-directory: true   # Automatically set the directory as safe for Git operations
 
       # Set up any language-specific dependencies (e.g., Node.js, Python, etc.)
       - name: Set up Node.js (example step for Node.js project)
@@ -40,9 +37,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          persist-credentials: true
-          set-safe-directory: true
+
+      # Set Git user info to avoid "Committer identity unknown" error
+      - name: Set up Git user
+        run: |
+            git config user.name "GitHub Actions Bot"
+            git config user.email "actions@github.com"
 
       # Determine the new version based on the commit hash (short version)
       - name: Get short commit hash
@@ -66,7 +66,7 @@ jobs:
           draft: false
           prerelease: false
 
-          
+
   mock_deploy:
     name: Mock Deployment to Staging
     runs-on: ubuntu-latest

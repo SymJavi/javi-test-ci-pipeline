@@ -38,12 +38,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set Git user info to avoid "Committer identity unknown" error
-      - name: Set up Git user
-        run: |
-            git config user.name "GitHub Actions Bot"
-            git config user.email "javier.tarazaga@sympower.net"
-
       # Determine the new version based on the commit hash (short version)
       - name: Get short commit hash
         id: short_commit_hash
@@ -53,6 +47,8 @@ jobs:
 
       - name: Create Git tag with commit hash
         run: |
+          git config user.name "GitHub Actions"
+          git config user.email "github-actions@users.noreply.github.com"
           git tag ${{ env.short_commit }} -m "Release version based on commit ${{ env.short_commit }}"
           git push origin ${{ env.short_commit }}
 

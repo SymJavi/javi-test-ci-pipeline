@@ -1,0 +1,23 @@
+name: Deploy a tag to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to promote to production'
+        required: true
+
+jobs:
+  promote-to-production:
+    name: Promote tag to Production
+    runs-on: ubuntu-latest
+    environment:
+      name: Production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Mock the deployment step
+      - name: Mock Deploy to Production
+        run: |
+          echo "Mock deployment to production environment using tag ${{ github.event.inputs.tag }} completed successfully."
